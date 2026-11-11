@@ -1,0 +1,54 @@
+#!/bin/bash
+# make-go-dir - sets up a directory structure for a Go API project
+# Usage: make-go-dir <root directory name> <identifier name>
+
+# a. Must have exactly two arguments
+if [ $# -ne 2 ]; then
+    echo "You need to provide two arguments for this script to work."
+    echo "Usage: make-go-dir <root directory name> <identifier name>"
+    exit 1
+fi
+
+root=$1
+identifier=$2
+
+# b. Ask the user to confirm
+echo "I am about to create a directory structure named '$root'."
+read -p "Do you want me to continue? [Yes/no] " answer
+
+if [ "$answer" = "Yes" ] || [ "$answer" = "yes" ]; then
+    # c. Create the structure
+    echo "Create directory structure..."
+
+    mkdir -p "$root/bin"
+    mkdir -p "$root/cmd/api"
+    mkdir -p "$root/internals"
+    mkdir -p "$root/migrations"
+    mkdir -p "$root/remote"
+
+    touch "$root/make-file"
+
+    # f. Write the hello world program into main.go
+    cat > "$root/cmd/api/main.go" << 'EOF'
+// File: cmd/api/main.go
+
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("Hello world!")
+}
+EOF
+
+    # g. Write the identifier into go.mod (e.g. karpbox.umana-amilcar.net)
+    echo "module $root.$identifier" > "$root/go.mod"
+
+    # h. Final message
+    echo "I have created a *main.go* file for you to test the directory structure."
+    echo "Type *go run ./cmd/api* at the root directory of your project to test your project."
+    echo "Thank you."
+else
+    # d. User said no (or anything else)
+    echo "Abort."
+fi
